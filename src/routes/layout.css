@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+	--color-void: #04060c;
+	--color-abyss: #070b18;
+	--color-deep: #0c1430;
+	--color-navy: #13204a;
+	--color-ridge: #1e3170;
+	--color-ink: #d5def5;
+	--color-mute: #8f9cc2;
+	--color-dim: #5d6894;
+	--color-signal: #3ef08a;
+	--color-signal-dim: #1c7a49;
+
+	--font-pixel: 'Pixelify Sans', ui-monospace, monospace;
+	--font-mono: 'Space Mono', ui-monospace, monospace;
+}
+
+@layer base {
+	html {
+		color-scheme: dark;
+		background-color: var(--color-void);
+	}
+
+	body {
+		@apply min-h-dvh bg-void font-mono text-[15px] leading-relaxed text-ink antialiased;
+		background-image:
+			radial-gradient(ellipse 80% 50% at 50% -10%, rgb(30 49 112 / 0.45), transparent 70%),
+			radial-gradient(rgb(143 156 194 / 0.07) 1px, transparent 1px);
+		background-size:
+			100% 100%,
+			8px 8px;
+		background-attachment: fixed;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		@apply font-pixel tracking-wide text-ink;
+	}
+
+	::selection {
+		@apply bg-signal text-void;
+	}
+
+	:focus-visible {
+		@apply outline-2 outline-offset-2 outline-signal;
+	}
+}
+
+@utility pixel-panel {
+	@apply border-2 border-ridge bg-deep/70;
+	box-shadow: 4px 4px 0 0 var(--color-void);
+}
+
+@utility pixel-button {
+	@apply inline-flex items-center gap-2 border-2 border-ridge bg-navy px-3 py-1 font-pixel text-sm text-ink transition-colors hover:border-signal hover:text-signal;
+	box-shadow: 3px 3px 0 0 var(--color-void);
+
+	&:active {
+		transform: translate(2px, 2px);
+		box-shadow: 1px 1px 0 0 var(--color-void);
+	}
+}
+
+@utility pixelated {
+	image-rendering: pixelated;
+}
+
+@utility prose-site {
+	@apply prose max-w-none prose-invert;
+	--tw-prose-body: var(--color-ink);
+	--tw-prose-headings: var(--color-ink);
+	--tw-prose-links: var(--color-signal);
+	--tw-prose-bold: var(--color-ink);
+	--tw-prose-code: var(--color-signal);
+	--tw-prose-quotes: var(--color-mute);
+	--tw-prose-quote-borders: var(--color-signal-dim);
+	--tw-prose-bullets: var(--color-signal-dim);
+	--tw-prose-counters: var(--color-mute);
+	--tw-prose-hr: var(--color-ridge);
+	--tw-prose-pre-bg: var(--color-abyss);
+	--tw-prose-th-borders: var(--color-ridge);
+	--tw-prose-td-borders: var(--color-navy);
+
+	& :where(h1, h2, h3, h4) {
+		font-family: var(--font-pixel);
+		font-weight: 500;
+	}
+
+	& :where(code)::before,
+	& :where(code)::after {
+		content: none;
+	}
+
+	& :where(:not(pre) > code) {
+		@apply bg-abyss px-1 py-0.5 font-normal;
+	}
+
+	& :where(pre) {
+		border: 2px solid var(--color-ridge);
+		border-radius: 0;
+	}
+
+	& :where(img) {
+		border: 2px solid var(--color-ridge);
+	}
+}
