@@ -1,10 +1,12 @@
 <script lang="ts">
 	import Tag from '#lib/components/Tag.svelte';
 	import { formatDate } from '#lib/format.ts';
+	import { postDate } from '#lib/types.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	let post = $derived(data.post);
+	let date = $derived(postDate(data.post));
 </script>
 
 <svelte:head>
@@ -17,8 +19,7 @@
 
 	<header class="mt-6 border-b-2 border-navy pb-6">
 		<p class="text-sm text-dim">
-			<time datetime={new Date(post.publishedAt).toISOString()}>{formatDate(post.publishedAt)}</time
-			>
+			<time datetime={date}>{formatDate(date)}</time>
 		</p>
 		<h1 class="mt-2 text-4xl sm:text-5xl">{post.title}</h1>
 		{#if post.summary}<p class="mt-3 text-lg text-mute">{post.summary}</p>{/if}
@@ -31,19 +32,15 @@
 		{/if}
 	</header>
 
-	{#if post.coverImage}
-		<img src={post.coverImage} alt="" class="mt-8 w-full border-2 border-ridge" />
-	{/if}
-
 	<div class="prose-site mt-8">
-		<!-- eslint-disable-next-line svelte/no-at-html-tags -- rendered from admin-authored markdown -->
-		{@html post.html}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -- rendered by the back end, which drops raw HTML -->
+		{@html post.content_html}
 	</div>
 
-	{#if post.projects.length}
+	{#if data.projects.length}
 		<aside class="mt-12 pixel-panel p-5 text-sm">
-			Related project{post.projects.length > 1 ? 's' : ''}:
-			{#each post.projects as project, i (project.slug)}
+			Related project{data.projects.length > 1 ? 's' : ''}:
+			{#each data.projects as project, i (project.slug)}
 				{#if i > 0},{/if}
 				<a href="/projects#{project.slug}" class="text-signal hover:underline">{project.name}</a>
 			{/each}

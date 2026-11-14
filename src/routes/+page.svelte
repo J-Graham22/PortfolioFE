@@ -20,24 +20,19 @@
 	<ProfileCard />
 </section>
 
-{#if data.nowPlaying !== null || data.reading !== null}
-	<section class="grid gap-6 sm:grid-cols-2" aria-label="What I'm into right now">
-		{#if data.nowPlaying !== null}
-			{#await data.nowPlaying}
-				<div class="h-32 animate-pulse pixel-panel"></div>
-			{:then track}
-				<NowPlaying initial={track} />
-			{/await}
-		{/if}
-		{#if data.reading !== null}
-			{#await data.reading}
-				<div class="h-32 animate-pulse pixel-panel"></div>
-			{:then books}
-				<Reading {books} />
-			{/await}
-		{/if}
-	</section>
-{/if}
+<!-- Each widget is left out when its service isn't set up or can't be reached. -->
+<section class="grid gap-6 sm:grid-cols-2" aria-label="What I'm into right now">
+	{#await data.nowListening}
+		<div class="h-32 animate-pulse pixel-panel"></div>
+	{:then listening}
+		{#if listening.available}<NowPlaying initial={listening} />{/if}
+	{/await}
+	{#await data.nowReading}
+		<div class="h-32 animate-pulse pixel-panel"></div>
+	{:then reading}
+		{#if reading.available}<Reading books={reading.books} />{/if}
+	{/await}
+</section>
 
 <section class="mt-16">
 	<div class="flex items-baseline justify-between">

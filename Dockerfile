@@ -3,21 +3,16 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-# Env vars are validated at build time too; real values are supplied at runtime.
-RUN DATABASE_URL=/tmp/build.db npm run build && npm prune --omit=dev
+RUN npm run build && npm prune --omit=dev
 
+# The site keeps no data of its own; all content comes from the back end at API_URL.
 FROM node:24-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production \
-	PORT=3000 \
-	DATABASE_URL=/data/site.db \
-	UPLOAD_DIR=/data/uploads
+	PORT=3000
 COPY --from=build /app/build ./build
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/drizzle ./drizzle
 COPY package.json ./
-RUN mkdir -p /data && chown node:node /data
 USER node
-VOLUME /data
 EXPOSE 3000
 CMD ["node", "build"]

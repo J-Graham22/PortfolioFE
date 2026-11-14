@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { NowPlaying } from '#lib/types.ts';
-	import { formatDate } from '#lib/format.ts';
+	import type { NowListening } from '#lib/types.ts';
 
-	let { initial }: { initial: NowPlaying | null } = $props();
+	let { initial }: { initial: NowListening } = $props();
 
-	let track = $derived(initial);
+	let now = $derived(initial);
+	let track = $derived(now.available ? now.track : null);
 
 	onMount(() => {
 		const refresh = async () => {
 			if (document.hidden) return;
-			const res = await fetch('/api/now-playing').catch(() => null);
-			if (res?.ok) track = await res.json();
+			const res = await fetch('/api/now/listening').catch(() => null);
+			if (res?.ok) now = await res.json();
 		};
 		const interval = setInterval(refresh, 30_000);
 		document.addEventListener('visibilitychange', refresh);
@@ -24,23 +24,31 @@
 
 <section class="pixel-panel p-5" aria-labelledby="now-playing-heading">
 	<h2 id="now-playing-heading" class="flex items-center gap-2 text-sm text-mute">
-		{#if track?.isPlaying}
+		{#if track && now.is_playing}
 			<span class="flex h-3 items-end gap-0.5" aria-hidden="true">
 				{#each [0, 1, 2, 3] as i (i)}
 					<span class="eq-bar w-1 bg-signal" style:animation-delay="{i * 0.15}s"></span>
 				{/each}
 			</span>
 			Listening to
+		{:else if track}
+			Paused on
 		{:else}
-			Last listened to
+			Listening to
 		{/if}
 	</h2>
 
 	{#if track}
-		<a href={track.url} target="_blank" rel="noopener" class="group mt-3 flex items-center gap-4">
-			{#if track.artUrl}
+		<svelte:element
+			this={track.url ? 'a' : 'div'}
+			href={track.url}
+			target={track.url ? '_blank' : undefined}
+			rel={track.url ? 'noopener' : undefined}
+			class="group mt-3 flex items-center gap-4"
+		>
+			{#if track.image_url}
 				<img
-					src={track.artUrl}
+					src={track.image_url}
 					alt=""
 					width="64"
 					height="64"
@@ -49,16 +57,16 @@
 			{/if}
 			<span class="min-w-0">
 				<span class="block truncate font-pixel text-lg transition-colors group-hover:text-signal"
-					>{track.title}</span
+					>{track.name}</span
 				>
-				<span class="block truncate text-sm text-mute">{track.artist}</span>
-				{#if !track.isPlaying && track.playedAt}
-					<span class="block text-xs text-dim">{formatDate(track.playedAt)}</span>
+				<span class="block truncate text-sm text-mute">{track.artists.join(', ')}</span>
+				{#if track.album}
+					<span class="block truncate text-xs text-dim">{track.album}</span>
 				{/if}
 			</span>
-		</a>
+		</svelte:element>
 	{:else}
-		<p class="mt-3 text-sm text-dim">Silence. Spotify isn't telling me anything right now.</p>
+		<p class="mt-3 text-sm text-dim">Silence. Nothing's playing right now.</p>
 	{/if}
 </section>
 

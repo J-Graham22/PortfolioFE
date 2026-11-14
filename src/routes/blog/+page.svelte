@@ -5,14 +5,18 @@
 
 	let { data }: PageProps = $props();
 
-	const tagHref = (slug: string) => {
+	const blogHref = ({ tag = data.tag, page = 1 }: { tag?: string; page?: number }) => {
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- built and discarded, not reactive state
 		const params = new URLSearchParams();
 		if (data.q) params.set('q', data.q);
-		if (slug && slug !== data.tag) params.set('tag', slug);
+		if (tag) params.set('tag', tag);
+		if (page > 1) params.set('page', String(page));
 		const query = params.toString();
 		return query ? `/blog?${query}` : '/blog';
 	};
+
+	// Clicking the active tag clears it.
+	const tagHref = (slug: string) => blogHref({ tag: slug === data.tag ? '' : slug });
 </script>
 
 <svelte:head>
@@ -49,7 +53,7 @@
 
 {#if data.q || data.tag}
 	<p class="mt-6 text-sm text-mute">
-		{data.posts.length} result{data.posts.length === 1 ? '' : 's'}
+		{data.total} result{data.total === 1 ? '' : 's'}
 		{#if data.q}for "<span class="text-ink">{data.q}</span>"{/if}
 		{#if data.tag}tagged <span class="text-ink"
 				>#{data.tags.find((t) => t.slug === data.tag)?.name ?? data.tag}</span
@@ -65,3 +69,19 @@
 		<p class="text-dim">No posts found.</p>
 	{/each}
 </div>
+
+{#if data.pages > 1}
+	<nav class="mt-8 flex items-center justify-between text-sm" aria-label="Pages">
+		{#if data.page > 1}
+			<a class="pixel-button" href={blogHref({ page: data.page - 1 })} rel="prev">&larr; newer</a>
+		{:else}
+			<span></span>
+		{/if}
+		<span class="text-dim">page {data.page} of {data.pages}</span>
+		{#if data.page < data.pages}
+			<a class="pixel-button" href={blogHref({ page: data.page + 1 })} rel="next">older &rarr;</a>
+		{:else}
+			<span></span>
+		{/if}
+	</nav>
+{/if}

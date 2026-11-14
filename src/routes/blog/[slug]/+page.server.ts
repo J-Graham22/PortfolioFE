@@ -1,9 +1,13 @@
-import { error } from '@sveltejs/kit';
-import { getPost } from '#lib/server/posts.ts';
+import { getPost, listProjects } from '#lib/server/api.ts';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
-	const post = await getPost(params.slug);
-	if (!post) error(404, 'Post not found');
-	return { post };
+	const [post, projects] = await Promise.all([getPost(params.slug), listProjects()]);
+	return {
+		post,
+		// Projects point at their write-up; this follows that link backwards.
+		projects: projects
+			.filter((project) => project.post?.slug === post.slug)
+			.map(({ slug, name }) => ({ slug, name }))
+	};
 };

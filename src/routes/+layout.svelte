@@ -19,7 +19,8 @@
 		{ href: '/', label: 'home' },
 		{ href: '/projects', label: 'projects' },
 		{ href: '/blog', label: 'blog' },
-		{ href: '/skills', label: 'skills' }
+		{ href: '/skills', label: 'skills' },
+		{ href: '/work', label: 'work' }
 	];
 
 	const isActive = (href: string) =>

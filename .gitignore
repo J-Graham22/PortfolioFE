@@ -25,6 +25,6 @@ vite.config.ts.timestamp-*
 *.db
 
 # App data
-uploads
+/uploads
 *.db
 *.db-*

@@ -12,10 +12,7 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter(),
-			// The only mutating endpoints are /api/*, which authenticate with a bearer token
-			// (not cookies), so origin checks would only block `curl -F` uploads.
-			csrf: { trustedOrigins: ['*'] }
+			adapter: adapter()
 		})
 	],
 	test: {

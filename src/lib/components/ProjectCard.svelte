@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Project } from '#lib/server/projects.ts';
-	import { statusLabels } from '#lib/format.ts';
+	import type { Project } from '#lib/types.ts';
 	import Icon from './Icon.svelte';
 	import Tag from './Tag.svelte';
 
@@ -9,22 +8,13 @@
 
 <article class="flex flex-col overflow-hidden pixel-panel">
 	<img
-		src={project.image}
+		src={project.photo_url}
 		alt=""
 		loading="lazy"
 		class="aspect-video w-full border-b-2 border-ridge bg-abyss object-cover pixelated"
 	/>
 	<div class="flex flex-1 flex-col gap-3 p-5">
-		<div class="flex items-start justify-between gap-3">
-			<h3 class="text-xl">{project.name}</h3>
-			<span
-				class="shrink-0 border px-1.5 text-[11px] uppercase {project.status === 'in_progress'
-					? 'border-signal-dim text-signal'
-					: 'border-ridge text-dim'}"
-			>
-				{statusLabels[project.status]}
-			</span>
-		</div>
+		<h3 class="text-xl">{project.name}</h3>
 
 		{#if project.description}
 			<p class="text-sm text-mute">{project.description}</p>
@@ -42,21 +32,21 @@
 			</ul>
 		{/if}
 
-		{#if project.repoUrl || project.demoUrl || project.post}
+		{#if project.repo_url || project.demo_url || project.post}
 			<div class="mt-auto flex flex-wrap gap-3 pt-2">
-				{#if project.repoUrl && project.repoHost}
-					<a class="pixel-button" href={project.repoUrl} rel="noopener" target="_blank">
-						<Icon name={project.repoHost} />
-						{project.repoHost === 'codeberg' ? 'Codeberg' : 'GitHub'}
+				{#if project.repo_url && project.repo_host}
+					<a class="pixel-button" href={project.repo_url} rel="noopener" target="_blank">
+						<Icon name={project.repo_host} />
+						{project.repo_host === 'codeberg' ? 'Codeberg' : 'GitHub'}
 					</a>
 				{/if}
-				{#if project.demoUrl}
-					<a class="pixel-button" href={project.demoUrl} rel="noopener" target="_blank">
+				{#if project.demo_url}
+					<a class="pixel-button" href={project.demo_url} rel="noopener" target="_blank">
 						<Icon name="link" /> Demo
 					</a>
 				{/if}
 				{#if project.post}
-					<a class="pixel-button" href="/blog/{project.post.slug}" title={project.post.title}>
+					<a class="pixel-button" href={project.post.path} title={project.post.title}>
 						<Icon name="post" /> Write-up
 					</a>
 				{/if}

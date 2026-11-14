@@ -1,5 +1,6 @@
 import { identities, defaultIdentity, site } from '#lib/config/site.ts';
-import { listPosts } from '#lib/server/posts.ts';
+import { listPosts } from '#lib/server/api.ts';
+import { postDate } from '#lib/types.ts';
 import type { RequestHandler } from './$types';
 
 const escape = (value: string) =>
@@ -9,7 +10,8 @@ const escape = (value: string) =>
 	);
 
 export const GET: RequestHandler = async ({ url }) => {
-	const posts = await listPosts({ limit: 50 });
+	// 50 is the most the back end returns per page.
+	const { items: posts } = await listPosts({ perPage: 50 });
 	const items = posts
 		.map(
 			(post) => `
@@ -17,7 +19,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			<title>${escape(post.title)}</title>
 			<link>${url.origin}/blog/${post.slug}</link>
 			<guid>${url.origin}/blog/${post.slug}</guid>
-			<pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>
+			<pubDate>${new Date(postDate(post)).toUTCString()}</pubDate>
 			<description>${escape(post.summary)}</description>
 			${post.tags.map((t) => `<category>${escape(t.name)}</category>`).join('')}
 		</item>`

@@ -9,12 +9,18 @@
 
 	{#if books.length}
 		<ul class="mt-3 flex flex-col gap-3">
-			{#each books.slice(0, 3) as book (book.url)}
+			{#each books.slice(0, 3) as book, i (book.url ?? `${book.title}-${i}`)}
 				<li>
-					<a href={book.url} target="_blank" rel="noopener" class="group flex items-center gap-4">
-						{#if book.coverUrl}
+					<svelte:element
+						this={book.url ? 'a' : 'div'}
+						href={book.url}
+						target={book.url ? '_blank' : undefined}
+						rel={book.url ? 'noopener' : undefined}
+						class="group flex items-center gap-4"
+					>
+						{#if book.cover_url}
 							<img
-								src={book.coverUrl}
+								src={book.cover_url}
 								alt=""
 								loading="lazy"
 								class="h-16 w-11 border-2 border-ridge object-cover"
@@ -27,7 +33,7 @@
 							>
 							<span class="block truncate text-sm text-mute">{book.authors.join(', ')}</span>
 						</span>
-					</a>
+					</svelte:element>
 				</li>
 			{/each}
 		</ul>

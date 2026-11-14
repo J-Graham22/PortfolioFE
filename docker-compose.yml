@@ -4,15 +4,12 @@ services:
     restart: unless-stopped
     ports:
       - '3000:3000'
-    env_file: .env
     environment:
-      # Override the dev paths from .env with the persistent volume.
-      DATABASE_URL: /data/site.db
-      UPLOAD_DIR: /data/uploads
+      # The back end (NewPortfolioWebsiteBE). From inside a container, use an
+      # address the container can reach, not localhost, e.g.
+      # http://host.docker.internal:8080 or the back end's service name.
+      API_URL: ${API_URL:-http://host.docker.internal:8080}
       # Set this to your public URL, e.g. https://example.com
       ORIGIN: ${ORIGIN:-http://localhost:3000}
-    volumes:
-      - site-data:/data
-
-volumes:
-  site-data:
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'

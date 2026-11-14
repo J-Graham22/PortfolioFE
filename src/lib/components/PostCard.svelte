@@ -1,14 +1,16 @@
 <script lang="ts">
-	import type { Post } from '#lib/server/posts.ts';
+	import { postDate, type PostSummary } from '#lib/types.ts';
 	import { formatDate } from '#lib/format.ts';
 	import Tag from './Tag.svelte';
 
-	let { post }: { post: Omit<Post, 'markdown' | 'html'> } = $props();
+	let { post }: { post: PostSummary } = $props();
+
+	let date = $derived(postDate(post));
 </script>
 
 <article class="group pixel-panel p-5 transition-colors hover:border-signal-dim">
 	<p class="text-xs text-dim">
-		<time datetime={new Date(post.publishedAt).toISOString()}>{formatDate(post.publishedAt)}</time>
+		<time datetime={date}>{formatDate(date)}</time>
 	</p>
 	<h3 class="mt-1 text-xl">
 		<a href="/blog/{post.slug}" class="transition-colors group-hover:text-signal">{post.title}</a>
